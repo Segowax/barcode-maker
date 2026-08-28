@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Kodów CODE 128</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Generator Kodów Kreskowych</h1>
+
+        <div class="input-group">
+            <label for="barcodeText">Tekst do zakodowania:</label>
+            <input type="text" id="barcodeText" placeholder="Wprowadź tekst..." autocomplete="off">
+        </div>
+
+        <div class="input-group">
+            <label for="filename">Nazwa pliku (bez .png):</label>
+            <input type="text" id="filename" placeholder="np. moj_kod" autocomplete="off">
+        </div>
+
+        <div class="actions">
+            <button id="generateBtn">Generuj kod</button>
+            <button id="downloadBtn" class="hidden">Pobierz PNG</button>
+        </div>
+
+        <div class="canvas-container">
+            <!-- Tutaj JsBarcode wygeneruje kod kreskowy -->
+            <canvas id="barcodeCanvas"></canvas>
+        </div>
+    </div>
+
+    <!-- Biblioteka JsBarcode pobierana z CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
