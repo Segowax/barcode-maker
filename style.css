@@ -19,7 +19,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 450px;
+    max-width: 600px;
     text-align: center;
 }
 
@@ -95,4 +95,25 @@ button#downloadBtn:hover {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+table {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.result {
+    margin-top: 20px;
+    font-size: 1rem;
+    color: #333;
+    display: none;
 }

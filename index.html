@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Kodów CODE 128</title>
+    <title>CODE 128</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -28,12 +28,152 @@
         </div>
 
         <div class="canvas-container">
-            <!-- Tutaj JsBarcode wygeneruje kod kreskowy -->
             <canvas id="barcodeCanvas"></canvas>
         </div>
+
+        <div class="actions">
+            <input type="text" id="hashInput" placeholder="Wprowadź hash do porównania..." autocomplete="off">
+            <button type="button" id="compareBtn">Porównaj</button>
+        </div>
+
+        <div class="result"></div>
+
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Country</th>
+                <th>Postal-code</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Jan</td>
+                <td>Kowalski</td>
+                <td>Poland</td>
+                <td>00-001</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Anna</td>
+                <td>Nowak</td>
+                <td>Poland</td>
+                <td>12-345</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Piotr</td>
+                <td>Zieliński</td>
+                <td>Poland</td>
+                <td>98-765</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Maria</td>
+                <td>Wiśniewska</td>
+                <td>Poland</td>
+                <td>45-678</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Łukasz</td>
+                <td>Lewandowski</td>
+                <td>Poland</td>
+                <td>22-222</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>Katarzyna</td>
+                <td>Malinowska</td>
+                <td>Poland</td>
+                <td>33-333</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>Tomasz</td>
+                <td>Kaczmarek</td>
+                <td>Poland</td>
+                <td>44-444</td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>Agnieszka</td>
+                <td>Kamińska</td>
+                <td>Poland</td>
+                <td>55-555</td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td>Michał</td>
+                <td>Szymański</td>
+                <td>Poland</td>
+                <td>66-666</td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td>Ewa</td>
+                <td>Pawłowska</td>
+                <td>Poland</td>
+                <td>77-777</td>
+            </tr>
+            <tr>
+                <td>11</td>
+                <td>Adam</td>
+                <td>Zieliński</td>
+                <td>Poland</td>
+                <td>11-111</td>
+            </tr>
+            <tr>
+                <td>12</td>
+                <td>Beata</td>
+                <td>Wójcik</td>
+                <td>Poland</td>
+                <td>88-888</td>
+            </tr>
+            <tr>
+                <td>13</td>
+                <td>Grzegorz</td>
+                <td>Jabłoński</td>
+                <td>Poland</td>
+                <td>99-999</td>
+            </tr>
+            <tr>
+                <td>14</td>
+                <td>Monika</td>
+                <td>Kubiak</td>
+                <td>Poland</td>
+                <td>10-010</td>
+            </tr>
+            <tr>
+                <td>15</td>
+                <td>Robert</td>
+                <td>Ostrowski</td>
+                <td>Poland</td>
+                <td>20-020</td>
+            </tr>
+            <tr>
+                <td>12345</td>
+                <td>Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati beatae dolor, eveniet excepturi
+                    numquam doloribus aut maxime porro natus est aliquid aspernatur ut libero qui reiciendis magnam fuga
+                    alias cum.</td>
+                <td>Ostrowski</td>
+                <td>Poland</td>
+                <td>20-020</td>
+            </tr>
+            <tr>
+                <td>sd</td>
+                <td>Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati beatae dolor, eveniet excepturi
+                    numquam doloribus aut maxime porro natus est aliquid aspernatur ut libero qui reiciendis magnam fuga
+                    alias cum.</td>
+                <td>Ostrowski</td>
+                <td>Poland</td>
+                <td>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Molestiae reiciendis repellat ratione,
+                    consectetur earum nobis, incidunt unde atque vero sunt necessitatibus hic eligendi voluptatibus.
+                    Numquam, omnis consectetur? Consectetur, ratione ipsum.</td>
+            </tr>
+        </table>
     </div>
 
-    <!-- Biblioteka JsBarcode pobierana z CDN -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="script.js"></script>
 </body>

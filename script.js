@@ -4,9 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const textInput = document.getElementById('barcodeText');
     const filenameInput = document.getElementById('filename');
     const canvas = document.getElementById('barcodeCanvas');
+    const compareBtn = document.getElementById('compareBtn');
 
     generateBtn.addEventListener('click', () => {
-        // Pobieramy tekst i zamieniamy wpisane "\t" na rzeczywisty znak tabulacji
         const text = textInput.value.trim().replace(/\\t/g, '\t');
 
         if (!text) {
@@ -15,16 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            // Generowanie kodu kreskowego
             JsBarcode(canvas, text, {
                 format: "CODE128",
-                displayValue: false, // Ta flaga wyłącza tekst/podpis pod kodem
+                displayValue: false,
                 margin: 10,
-                background: "#ffffff", // Wymagane białe tło do eksportu pliku PNG
+                background: "#ffffff",
                 lineColor: "#000000"
             });
 
-            // Po poprawnym wygenerowaniu pokazujemy przycisk pobierania
             downloadBtn.classList.remove('hidden');
         } catch (error) {
             alert('Wystąpił błąd podczas generowania kodu: ' + error.message);
@@ -32,22 +30,60 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     downloadBtn.addEventListener('click', () => {
-        // Pobieramy nazwę pliku, lub ustawiamy domyślną jeśli pole jest puste
         let filename = filenameInput.value.trim();
         if (!filename) {
             filename = 'kod_kreskowy';
         }
 
-        // Zamiana zawartości <canvas> na format base64 obrazu PNG
         const imgData = canvas.toDataURL("image/png");
 
-        // Tworzenie "wirtualnego" linku i kliknięcie go, aby wywołać pobieranie w przeglądarce
         const link = document.createElement('a');
         link.href = imgData;
         link.download = `${filename}.png`;
-        
+
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     });
+
+    compareBtn.addEventListener('click', async () => {
+        const inputString = document.getElementById('hashInput').value.trim();
+        const resultDiv = document.getElementsByClassName('result')[0];
+
+        try {
+            const result = await compare(inputString, resultDiv);
+            if (result) {
+                resultDiv.innerText = 'Hash jest zgodny!';
+                resultDiv.style.color = 'green';
+                resultDiv.style.display = 'block';
+            } else {
+                resultDiv.innerText = 'Hash nie jest zgodny!';
+                resultDiv.style.color = 'red';
+                resultDiv.style.display = 'block';
+            }
+        } catch (error) {
+            console.error(['Error occurred while comparing string:', error]);
+        }
+    });
 });
+
+async function compare(inputString) {
+    let hash = 0;
+    if (inputString.length === 0) return hash;
+
+    const encodedString = new TextEncoder().encode(inputString);
+
+    console.log(encodedString);
+
+    hash = await crypto.subtle.digest('SHA-256', encodedString).then(hashBuffer => {
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    });
+
+    if (hash === '14dae5801a7c44c8f4527fdf5d9a2a3bda982bbc426cf67d173b1afd8357dc1c') {
+        return true;
+    } else {
+        return false;
+    }
+}
