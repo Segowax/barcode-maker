@@ -1,0 +1,91 @@
+@import url('animations.css');
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.login-form label {
+    margin-bottom: 5px;
+}
+
+.login-form input {
+    font-size: 16px;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.login-form input:focus {
+    outline: none;
+}
+
+.login-form input::placeholder {
+    color: #111;
+    font-family: Brush Script MT, sans-serif;
+}
+
+.login-form input:focus::placeholder {
+    color: transparent;
+    transition: color 0.5s ease;
+}
+
+.login-form button {
+    background-color: rgb(243, 120, 76);
+    cursor: pointer;
+    font-size: 16px;
+    overflow: hidden;
+    padding: 10px;
+    position: relative;
+}
+
+.login-form button::after {
+    background-color: rgba(255, 255, 255, 0.5);
+    content: '';
+    display: inline-block;
+    height: calc(100% + 30px);
+    left: -30px;
+    position: absolute;
+    rotate: 45deg;
+    top: -15px;
+    width: 10px;
+}
+
+.login-form button:hover::after {
+    animation: slide 1s alternate;
+}
+
+.large-ball {
+    align-items: center;
+    animation: bounce 3s infinite alternate;
+    background-color: rgba(55, 40, 190, 0.5);
+    border-radius: 50%;
+    display: flex;
+    height: 100px;
+    justify-content: center;
+    position: absolute;
+    right: 20%;
+    top: 0px;
+    width: 100px;
+}
+
+.small-ball {
+    animation: suuuu 3s infinite alternate;
+    background-color: rgba(55, 40, 190, 0.5);
+    border-radius: 50%;
+    display: flex;
+    height: 50px;
+    left: 0;
+    position: absolute;
+    top: 50%;
+    width: 50px;
+}
+
+.large-ball>img {
+    animation: lels 1s linear infinite;
+    border-radius: 50%;
+    height: 50%;
+    object-fit: cover;
+    width: 50%;
+}

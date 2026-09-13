@@ -1,0 +1,9 @@
+@import url('animations.css');
+
+#loading img {
+    animation: lels 1s linear infinite;
+    border-radius: 50%;
+    height: auto;
+    object-fit: cover;
+    width: 100%;
+}

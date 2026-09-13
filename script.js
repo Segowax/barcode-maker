@@ -1,10 +1,58 @@
+const SUPABASE_URL = 'https://hxkykopscbgorgkkpxvi.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_LtRmS9nawffi11Yo_YT3Qg_WU_0D6sJ';
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const viewLoading = document.getElementById('loading');
+const viewLogin = document.getElementById('login');
+const viewApp = document.getElementById('app');
+
+function showView(viewToShow) {
+    viewLoading.classList.add('hidden');
+    viewLogin.classList.add('hidden');
+    viewApp.classList.add('hidden');
+
+    viewToShow.classList.remove('hidden');
+}
+
+client.auth.onAuthStateChange((_, session) => {
+    setTimeout(() => {
+        if (session && session.user) {
+            const username = session.user.email.split('@')[0];
+            // userDisplayName.textContent = username;
+
+            showView(viewApp);
+        } else {
+            showView(viewLogin);
+        }
+    }, 2500);
+});
+
 document.addEventListener('DOMContentLoaded', () => {
+    const loginBtn = document.getElementById('loginBtn');
     const generateBtn = document.getElementById('generateBtn');
     const downloadBtn = document.getElementById('downloadBtn');
     const textInput = document.getElementById('barcodeText');
     const filenameInput = document.getElementById('filename');
     const canvas = document.getElementById('barcodeCanvas');
     const compareBtn = document.getElementById('compareBtn');
+
+    loginBtn.addEventListener('click', async () => {
+        const login = document.getElementById('login-input').value.trim().toLowerCase();
+        const password = document.getElementById('password-input').value.trim();
+
+        const syntheticEmail = `${login}@non-email.pl`;
+
+        const { data, error } = await client.auth.signInWithPassword({
+            email: syntheticEmail,
+            password: password
+        });
+
+        if (error) {
+            alert('Błędny login lub hasło!');
+        } else {
+            console.log('Zalogowano:', data.user);
+        }
+    });
 
     generateBtn.addEventListener('click', () => {
         const text = textInput.value.trim().replace(/\\t/g, '\t');

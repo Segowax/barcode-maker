@@ -1,0 +1,43 @@
+@keyframes slide {
+    from {
+        left: -25px;
+    }
+
+    to {
+        left: 102%;
+    }
+}
+
+@keyframes bounce {
+    0% {
+        transform: translateX(100px) translateY(100vh);
+    }
+
+    50% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateX(-200px) translateY(100vh);
+    }
+}
+
+@keyframes suuuu {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes lels {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

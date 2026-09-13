@@ -4,12 +4,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CODE 128</title>
+    <title>Nero</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="loading-style.css">
+    <link rel="stylesheet" href="login-style.css">
+    <link rel="stylesheet" href="content-style.css">
 </head>
 
 <body>
-    <div class="container">
+    <main id="loading" class="view">
+        <img src="xd.jpg" alt="LoAdInG-d-d--b">
+    </main>
+    <main id="login" class="view hidden">
+        <h1>Chciałbym życzyć Ci miłego dnia!</h1>
+        <div class="small-ball"></div>
+        <div class="large-ball">
+            <img src="xd.jpg" alt="LoAdInG-d-d--b">
+        </div>
+        <form class="login-form">
+            <label for="login">Login:</label>
+            <input type="text" id="login-input" placeholder="Login eingeben" autocomplete="off">
+            <label for="password">Hasło:</label>
+            <input type="password" id="password-input" placeholder="Passwort eingeben" autocomplete="off">
+            <button type="button" id="loginBtn">Gosh, here we go again</button>
+        </form>
+
+    </main>
+    <main id="app" class="view hidden">
         <h1>Generator Kodów Kreskowych</h1>
 
         <div class="input-group">
@@ -172,9 +193,10 @@
                     Numquam, omnis consectetur? Consectetur, ratione ipsum.</td>
             </tr>
         </table>
-    </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 </body>
 
