@@ -40,11 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const login = document.getElementById('login-input').value.trim().toLowerCase();
         const password = document.getElementById('password-input').value.trim();
 
-        const syntheticEmail = `${login}@non-email.pl`;
-
-        const { data, error } = await client.auth.signInWithPassword({
-            email: syntheticEmail,
-            password: password
+        const { data, error } = await client.auth.signInWithOAuth({
+            provider: 'github',
+            options: { reditrectTo: window.location.href }
         });
 
         if (error) {
