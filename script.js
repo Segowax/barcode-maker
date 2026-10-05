@@ -10,7 +10,7 @@ const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
 if (hashParams.size > 0) {
     const accessToken = hashParams.get('access_token');
     const error = hashParams.get('error');
-a
+    a
     if (error) {
         // console.log('Błąd:', error);
     }
@@ -28,10 +28,8 @@ a
 client.auth.onAuthStateChange((_, session) => {
     setTimeout(() => {
         if (session && session.user) {
-            // console.log(session);
             const username = session.user.email.split('@')[0];
-            // userDisplayName.textContent = username;
-
+            logActivity('login', username);
             document.body.classList.add('content-overflow');
             showView(viewApp);
         } else {
@@ -145,4 +143,19 @@ function showView(viewToShow) {
     viewApp.classList.add('hidden');
 
     viewToShow.classList.remove('hidden');
+}
+
+function logActivity(eventType, targetElement) {
+    fetch(`${SUPABASE_URL}/rest/v1/activity_logs`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${JSON.parse(localStorage.getItem('sb-hxkykopscbgorgkkpxvi-auth-token')).access_token}`
+        },
+        body: JSON.stringify({
+            event_type: eventType,
+            target_element: targetElement
+        })
+    }).catch(() => { debugger; });
 }
