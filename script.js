@@ -1,10 +1,63 @@
+const SUPABASE_URL = 'https://hxkykopscbgorgkkpxvi.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_LtRmS9nawffi11Yo_YT3Qg_WU_0D6sJ';
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const viewLoading = document.getElementById('loading');
+const viewLogin = document.getElementById('login');
+const viewApp = document.getElementById('app');
+
+const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
+if (hashParams.size > 0) {
+    const accessToken = hashParams.get('access_token');
+    const error = hashParams.get('error');
+a
+    if (error) {
+        // console.log('Błąd:', error);
+    }
+
+    if (accessToken) {
+        // console.log('Token:', accessToken);
+    }
+
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.hash = '';
+    window.history.replaceState({}, document.title, cleanUrl.toString());
+}
+
+
+client.auth.onAuthStateChange((_, session) => {
+    setTimeout(() => {
+        if (session && session.user) {
+            // console.log(session);
+            const username = session.user.email.split('@')[0];
+            // userDisplayName.textContent = username;
+
+            document.body.classList.add('content-overflow');
+            showView(viewApp);
+        } else {
+            showView(viewLogin);
+        }
+    }, 2500);
+});
+
 document.addEventListener('DOMContentLoaded', () => {
+    const loginBtn = document.getElementById('loginBtn');
     const generateBtn = document.getElementById('generateBtn');
     const downloadBtn = document.getElementById('downloadBtn');
     const textInput = document.getElementById('barcodeText');
     const filenameInput = document.getElementById('filename');
     const canvas = document.getElementById('barcodeCanvas');
     const compareBtn = document.getElementById('compareBtn');
+
+    loginBtn.addEventListener('click', async () => {
+        const login = document.getElementById('login-input').value.trim().toLowerCase();
+        const password = document.getElementById('password-input').value.trim();
+
+        await client.auth.signInWithOAuth({
+            provider: 'github',
+            options: { redirectTo: window.location.href }
+        });
+    });
 
     generateBtn.addEventListener('click', () => {
         const text = textInput.value.trim().replace(/\\t/g, '\t');
@@ -62,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultDiv.style.display = 'block';
             }
         } catch (error) {
-            console.error(['Error occurred while comparing string:', error]);
+            // console.error(['Error occurred while comparing string:', error]);
         }
     });
 });
@@ -72,8 +125,6 @@ async function compare(inputString) {
     if (inputString.length === 0) return hash;
 
     const encodedString = new TextEncoder().encode(inputString);
-
-    console.log(encodedString);
 
     hash = await crypto.subtle.digest('SHA-256', encodedString).then(hashBuffer => {
         const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -86,4 +137,12 @@ async function compare(inputString) {
     } else {
         return false;
     }
+}
+
+function showView(viewToShow) {
+    viewLoading.classList.add('hidden');
+    viewLogin.classList.add('hidden');
+    viewApp.classList.add('hidden');
+
+    viewToShow.classList.remove('hidden');
 }
