@@ -10,15 +10,47 @@
 
 @keyframes bounce {
     0% {
-        transform: translateX(100px) translateY(100vh);
+        transform: translateX(200px) translateY(100vh);
+    }
+
+    10% {
+        transform: translateX(100px) translateY(0);
+    }
+
+    20% {
+        transform: translateX(-100px) translateY(100vh);
+    }
+
+    30% {
+        transform: translateX(-200px) translateY(0);
+    }
+
+    40% {
+        transform: translateX(-400px) translateY(100vh);
     }
 
     50% {
-        transform: translateY(0);
+        transform: translateX(-600px) translateY(0);
+    }
+
+    60% {
+        transform: translateX(-800px) translateY(100vh);
+    }
+
+    70% {
+        transform: translateX(-1000px) translateY(0);
+    }
+
+    80% {
+        transform: translateX(-1200px) translateY(100vh);
+    }
+
+    90% {
+        transform: translateX(-1400px) translateY(0);
     }
 
     100% {
-        transform: translateX(-200px) translateY(100vh);
+        transform: size(200%);
     }
 }
 

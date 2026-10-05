@@ -6,20 +6,33 @@ const viewLoading = document.getElementById('loading');
 const viewLogin = document.getElementById('login');
 const viewApp = document.getElementById('app');
 
-function showView(viewToShow) {
-    viewLoading.classList.add('hidden');
-    viewLogin.classList.add('hidden');
-    viewApp.classList.add('hidden');
+const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
+if (hashParams.size > 0) {
+    const accessToken = hashParams.get('access_token');
+    const error = hashParams.get('error');
+a
+    if (error) {
+        // console.log('Błąd:', error);
+    }
 
-    viewToShow.classList.remove('hidden');
+    if (accessToken) {
+        // console.log('Token:', accessToken);
+    }
+
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.hash = '';
+    window.history.replaceState({}, document.title, cleanUrl.toString());
 }
+
 
 client.auth.onAuthStateChange((_, session) => {
     setTimeout(() => {
         if (session && session.user) {
+            // console.log(session);
             const username = session.user.email.split('@')[0];
             // userDisplayName.textContent = username;
 
+            document.body.classList.add('content-overflow');
             showView(viewApp);
         } else {
             showView(viewLogin);
@@ -40,16 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const login = document.getElementById('login-input').value.trim().toLowerCase();
         const password = document.getElementById('password-input').value.trim();
 
-        const { data, error } = await client.auth.signInWithOAuth({
+        await client.auth.signInWithOAuth({
             provider: 'github',
-            options: { reditrectTo: window.location.href }
+            options: { redirectTo: window.location.href }
         });
-
-        if (error) {
-            alert('Błędny login lub hasło!');
-        } else {
-            console.log('Zalogowano:', data.user);
-        }
     });
 
     generateBtn.addEventListener('click', () => {
@@ -108,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultDiv.style.display = 'block';
             }
         } catch (error) {
-            console.error(['Error occurred while comparing string:', error]);
+            // console.error(['Error occurred while comparing string:', error]);
         }
     });
 });
@@ -118,8 +125,6 @@ async function compare(inputString) {
     if (inputString.length === 0) return hash;
 
     const encodedString = new TextEncoder().encode(inputString);
-
-    console.log(encodedString);
 
     hash = await crypto.subtle.digest('SHA-256', encodedString).then(hashBuffer => {
         const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -132,4 +137,12 @@ async function compare(inputString) {
     } else {
         return false;
     }
+}
+
+function showView(viewToShow) {
+    viewLoading.classList.add('hidden');
+    viewLogin.classList.add('hidden');
+    viewApp.classList.add('hidden');
+
+    viewToShow.classList.remove('hidden');
 }

@@ -58,7 +58,7 @@
 
 .large-ball {
     align-items: center;
-    animation: bounce 3s infinite alternate;
+    animation: bounce 10s infinite alternate;
     background-color: rgba(55, 40, 190, 0.5);
     border-radius: 50%;
     display: flex;
