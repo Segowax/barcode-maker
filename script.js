@@ -33,8 +33,9 @@ if (hashParams.size > 0 || queryParams.has('error') || queryParams.has('error_de
 
 client.auth.onAuthStateChange((_, session) => {
     setTimeout(() => {
-        if (session && session.user) {
+        if (session && session.user && localStorage.getItem('login') !== 'true') {
             const username = session.user.email.split('@')[0];
+            localStorage.setItem('login', true);
             logActivity('login', username);
 
             showView(viewApp);
@@ -53,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('barcodeCanvas');
     const compareBtn = document.getElementById('compareBtn');
 
+    client.functions.invoke("log-visit");
     window.addEventListener('resize', updateContentOverflow);
 
     loginBtn.addEventListener('click', async () => {
@@ -169,16 +171,9 @@ function updateContentOverflow() {
 }
 
 function logActivity(eventType, targetElement) {
-    fetch(`${SUPABASE_URL}/rest/v1/activity_logs`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'apikey': SUPABASE_ANON_KEY,
-            'Authorization': `Bearer ${JSON.parse(localStorage.getItem('sb-hxkykopscbgorgkkpxvi-auth-token')).access_token}`
-        },
-        body: JSON.stringify({
-            event_type: eventType,
-            target_element: targetElement
-        })
-    }).catch(() => { });
+    client
+        .from('activity_logs')
+        .insert([
+            { event_type: eventType, target_element: targetElement },
+        ]);
 }
