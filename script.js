@@ -53,6 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         await client.auth.signInWithOAuth({
             provider: 'github',
+            options: {
+                redirectTo: window.location.href
+            }
         });
     });
 
