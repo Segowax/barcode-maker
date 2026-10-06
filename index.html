@@ -15,8 +15,8 @@
     <main id="loading" class="view">
         <img src="assets/xd.jpg" alt="LoAdInG-d-d--b">
     </main>
-    <main id="login" class="view hidden">
-        <h1>Chciałbym życzyć Ci miłego dnia!</h1>
+    <main id="login" class="view" hidden>
+        <h1>Chcialbym zyczyć Ci milego dnia!</h1>
         <div class="small-ball"></div>
         <div class="large-ball">
             <img src="assets/xd.jpg" alt="LoAdInG-d-d--b">
@@ -30,38 +30,41 @@
         </form>
 
     </main>
-    <main id="app" class="view hidden">
+    <main id="app" class="view" hidden>
         <h1>Generator Kodów Kreskowych</h1>
 
-        <div class="input-group">
+        <section class="input-group">
             <label for="barcodeText">Tekst do zakodowania:</label>
-            <input type="text" id="barcodeText" placeholder="Wprowadź tekst..." autocomplete="off">
-        </div>
+            <input type="text" id="barcodeText" placeholder="Text eingeben" autocomplete="off">
+        </section>
 
-        <div class="input-group">
+        <section class="input-group">
             <label for="filename">Nazwa pliku (bez .png):</label>
             <input type="text" id="filename" placeholder="np. moj_kod" autocomplete="off">
-        </div>
+        </section>
 
-        <div class="actions">
+        <section class="actions">
             <button id="generateBtn">Generuj kod</button>
             <button id="downloadBtn" class="hidden">Pobierz PNG</button>
-        </div>
+        </section>
 
-        <div class="canvas-container">
+        <section class="canvas-container">
             <canvas id="barcodeCanvas"></canvas>
-        </div>
+        </section>
 
-        <div class="actions">
-            <input type="text" id="hashInput" placeholder="Wprowadź hash do porównania..." autocomplete="off">
+        <section class="actions">
+            <input type="text" id="hashInput" placeholder="hash do porównania..." autocomplete="off">
             <button type="button" id="compareBtn">Porównaj</button>
-        </div>
+        </section>
 
-        <div class="result"></div>
+        <section class="result"></section>
     </main>
+
+    <toast-bar id="toast" hidden></toast-bar>
 
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="toast-bar.js"></script>
     <script src="script.js"></script>
 </body>
 

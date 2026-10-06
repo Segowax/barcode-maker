@@ -6,31 +6,38 @@ const viewLoading = document.getElementById('loading');
 const viewLogin = document.getElementById('login');
 const viewApp = document.getElementById('app');
 
-const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
-if (hashParams.size > 0) {
-    const accessToken = hashParams.get('access_token');
-    const error = hashParams.get('error');
+let activeView = null;
+const contentResizeObserver = new ResizeObserver(updateContentOverflow);
 
-    if (error) {
-        // console.log('Błąd:', error);
-    }
+const currentUrl = new URL(window.location.href);
+const queryParams = currentUrl.searchParams;
+const hashParams = new URLSearchParams(currentUrl.hash.replace('#', ''));
+const error = queryParams.get('error') || hashParams.get('error');
+const description = queryParams.get('error_description') || hashParams.get('error_description');
 
-    if (accessToken) {
-        // console.log('Token:', accessToken);
-    }
+if (error) {
+    /** @type {ToastBar | null} */
+    const toast = document.getElementById('toast');
 
-    const cleanUrl = new URL(window.location.href);
-    cleanUrl.hash = '';
-    window.history.replaceState({}, document.title, cleanUrl.toString());
+    toast?.show(`${error}: ${description}`);
 }
 
+if (hashParams.size > 0 || queryParams.has('error') || queryParams.has('error_description')) {
+    const cleanUrl = new URL(currentUrl);
+    if (hashParams.size > 0) {
+        cleanUrl.hash = '';
+    }
+    cleanUrl.searchParams.delete('error');
+    cleanUrl.searchParams.delete('error_description');
+    window.history.replaceState({}, document.title, cleanUrl.toString());
+}
 
 client.auth.onAuthStateChange((_, session) => {
     setTimeout(() => {
         if (session && session.user) {
             const username = session.user.email.split('@')[0];
             logActivity('login', username);
-            document.body.classList.add('content-overflow');
+
             showView(viewApp);
         } else {
             showView(viewLogin);
@@ -47,10 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('barcodeCanvas');
     const compareBtn = document.getElementById('compareBtn');
 
+    window.addEventListener('resize', updateContentOverflow);
+
     loginBtn.addEventListener('click', async () => {
         const login = document.getElementById('login-input').value.trim().toLowerCase();
         const password = document.getElementById('password-input').value.trim();
-        
+
         await client.auth.signInWithOAuth({
             provider: 'github',
             options: {
@@ -140,11 +149,24 @@ async function compare(inputString) {
 }
 
 function showView(viewToShow) {
-    viewLoading.classList.add('hidden');
-    viewLogin.classList.add('hidden');
-    viewApp.classList.add('hidden');
+    viewLoading.hidden = true;
+    viewLogin.hidden = true;
+    viewApp.hidden = true;
 
-    viewToShow.classList.remove('hidden');
+    viewToShow.hidden = false;
+    activeView = viewToShow;
+    contentResizeObserver.disconnect();
+    contentResizeObserver.observe(activeView);
+    updateContentOverflow();
+}
+
+function updateContentOverflow() {
+    if (!activeView) {
+        return;
+    }
+
+    const exceedsViewport = activeView.getBoundingClientRect().height > window.innerHeight;
+    document.body.classList.toggle('content-overflow', exceedsViewport);
 }
 
 function logActivity(eventType, targetElement) {

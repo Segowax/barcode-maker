@@ -1,0 +1,51 @@
+#app .result {
+    margin-top: 20px;
+    font-size: 1rem;
+    color: #333;
+    display: none;
+}
+
+#app .canvas-container {
+    margin-top: 30px;
+    min-height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#app .actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+#app .actions button {
+    background-color: rgb(243, 120, 76);
+    cursor: pointer;
+    font-size: 16px;
+    overflow: hidden;
+    padding: 10px;
+}
+
+#app .input-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#app .input-group label {
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+#app .input-group input {
+    padding: 10px;
+    width: 80%;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
