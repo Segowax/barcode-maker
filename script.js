@@ -170,8 +170,8 @@ function updateContentOverflow() {
     document.body.classList.toggle('content-overflow', exceedsViewport);
 }
 
-function logActivity(eventType, targetElement) {
-    client
+async function logActivity(eventType, targetElement) {
+    await client
         .from('activity_logs')
         .insert([
             { event_type: eventType, target_element: targetElement },
