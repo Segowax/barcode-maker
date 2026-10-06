@@ -50,10 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
     loginBtn.addEventListener('click', async () => {
         const login = document.getElementById('login-input').value.trim().toLowerCase();
         const password = document.getElementById('password-input').value.trim();
-
+        
         await client.auth.signInWithOAuth({
             provider: 'github',
-            options: { redirectTo: window.location.href }
         });
     });
 
@@ -157,5 +156,5 @@ function logActivity(eventType, targetElement) {
             event_type: eventType,
             target_element: targetElement
         })
-    }).catch(() => { debugger; });
+    }).catch(() => { });
 }
