@@ -10,7 +10,7 @@ const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
 if (hashParams.size > 0) {
     const accessToken = hashParams.get('access_token');
     const error = hashParams.get('error');
-    a
+
     if (error) {
         // console.log('Błąd:', error);
     }
