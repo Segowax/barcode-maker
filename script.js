@@ -5,6 +5,8 @@ const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const viewLoading = document.getElementById('loading');
 const viewLogin = document.getElementById('login');
 const viewApp = document.getElementById('app');
+/** @type {ToastBar | null} */
+const toast = document.getElementById('toast');
 
 let activeView = null;
 const contentResizeObserver = new ResizeObserver(updateContentOverflow);
@@ -16,9 +18,6 @@ const error = queryParams.get('error') || hashParams.get('error');
 const description = queryParams.get('error_description') || hashParams.get('error_description');
 
 if (error) {
-    /** @type {ToastBar | null} */
-    const toast = document.getElementById('toast');
-
     toast?.show(`${error}: ${description}`);
 }
 
@@ -72,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = textInput.value.trim().replace(/\\t/g, '\t');
 
         if (!text) {
-            alert('Proszę wprowadzić tekst do zakodowania.');
+            toast.show('Proszę wprowadzić tekst do zakodowania.');
             return;
         }
 
@@ -87,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             downloadBtn.classList.remove('hidden');
         } catch (error) {
-            alert('Wystąpił błąd podczas generowania kodu: ' + error.message);
+            toast.show('Wystąpił błąd podczas generowania kodu: ' + error.message);
         }
     });
 
@@ -124,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultDiv.style.display = 'block';
             }
         } catch (error) {
-            // console.error(['Error occurred while comparing string:', error]);
+            toast.show(`Error occurred while comparing string: ${error.message}`);
         }
     });
 });
