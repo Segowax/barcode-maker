@@ -34,11 +34,10 @@ if (hashParams.size > 0 || queryParams.has('error') || queryParams.has('error_de
 client.auth.onAuthStateChange((_, session) => {
     setTimeout(() => {
         if (session && session.user) {
-            const username = session.user.email.split('@')[0];
-            localStorage.setItem('login', true);
             if (localStorage.getItem('login') !== 'true')
-                logActivity('login', username);
+                logActivity('login', session.user.email);
 
+            localStorage.setItem('login', true);
             showView(viewApp);
         } else {
             showView(viewLogin);
