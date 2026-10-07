@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "build": "mkdir dist && uglifyjs src/awesome-script.js -o dist/script.min.js -c -m && uglifyjs src/toast-bar.js -o dist/toast-bar.min.js -c -m && cp src.index.html dist/index.htm && cp -r src/styles dist/styles"
+  },
+  "devDependencies": {
+    "uglify-js": "^3.19.3"
+  }
+}

@@ -1,8 +1,4 @@
 .vscode
+dist
 node_modules
-
-package.json
 package-lock.json
-
-awsome-script.js
-toast-bar.js
