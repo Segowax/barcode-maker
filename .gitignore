@@ -4,5 +4,5 @@ node_modules
 package.json
 package-lock.json
 
-script.js
+awsome-script.js
 toast-bar.js
