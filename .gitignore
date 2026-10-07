@@ -1,1 +1,8 @@
 .vscode
+node_modules
+
+package.json
+package-lock.json
+
+script.js
+toast-bar.js
