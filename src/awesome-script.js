@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     client.functions.invoke("log-visit");
     window.addEventListener('resize', updateContentOverflow);
+    countdown();
 
     loginBtn.addEventListener('click', async () => {
         const login = document.getElementById('login-input').value.trim();
@@ -185,4 +186,25 @@ async function logActivity(eventType, targetElement) {
         .insert([
             { event_type: eventType, target_element: targetElement },
         ]);
+}
+
+function countdown() {
+    const end = new Date("2026-12-01T03:15:00Z").getTime();
+
+    let x = setInterval(function () {
+        let now = new Date().getTime();
+        let distance = end - now;
+
+        let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById('the-timer').innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+        if (distance < 0) {
+            clearInterval(x);
+            document.getElementById('the-timer').innerText = "My Treasure";
+        }
+    }, 1000);
 }
