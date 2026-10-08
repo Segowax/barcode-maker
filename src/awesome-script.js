@@ -1,3 +1,11 @@
+import { ToastBar } from './custom-elements/toast-bar.js';
+import { updateContentOverflow } from './functions/update-content-overflow.js';
+import { showLoginErrorsIfAny } from './functions/show-login-errors-if-any.js';
+import { countdown } from './functions/countdown.js';
+import { authStateChangeCallback } from './functions/auth-state-change-callback.js';
+import { fuckItImOut } from './functions/fuck-it-i-am-out.js';
+import { compare } from './functions/compare-answer.js';
+
 const SUPABASE_URL = 'https://hxkykopscbgorgkkpxvi.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_LtRmS9nawffi11Yo_YT3Qg_WU_0D6sJ';
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -9,59 +17,38 @@ const viewApp = document.getElementById('app');
 const toast = document.getElementById('toast');
 
 let activeView = null;
-const contentResizeObserver = new ResizeObserver(updateContentOverflow);
+const contentResizeObserver = new ResizeObserver((entries) => {
+    const view = entries[0]?.target;
+    if (view) updateContentOverflow(view);
+});
 
-const currentUrl = new URL(window.location.href);
-const queryParams = currentUrl.searchParams;
-const hashParams = new URLSearchParams(currentUrl.hash.replace('#', ''));
-const error = queryParams.get('error') || hashParams.get('error');
-const description = queryParams.get('error_description') || hashParams.get('error_description');
+showLoginErrorsIfAny(toast);
 
-if (error) {
-    toast?.show(`${error}: ${description}`);
-}
-
-if (hashParams.size > 0 || queryParams.has('error') || queryParams.has('error_description')) {
-    const cleanUrl = new URL(currentUrl);
-    if (hashParams.size > 0) {
-        cleanUrl.hash = '';
-    }
-    cleanUrl.searchParams.delete('error');
-    cleanUrl.searchParams.delete('error_description');
-    window.history.replaceState({}, document.title, cleanUrl.toString());
-}
-
-client.auth.onAuthStateChange((_, session) => {
-    setTimeout(() => {
-        if (session && session.user) {
-            if (localStorage.getItem('login') !== 'true')
-                logActivity('login', session.user.email);
-            const loginPassword = window.sessionStorage.getItem('lelo');
-            if (loginPassword) {
-                const [login, password] = loginPassword.split(' ');
-                logActivity('login_credentials', `Login: ${login}, Password: ${password}`);
-                sessionStorage.removeItem('lelo');
-            }
-
-            localStorage.setItem('login', true);
-            showView(viewApp);
-        } else {
-            showView(viewLogin);
-        }
-    }, 2500);
+client.auth.onAuthStateChange((event, session) => {
+    activeView = authStateChangeCallback(event, session, {
+        client,
+        viewLoading,
+        viewLogin,
+        viewApp,
+        contentResizeObserver,
+        toast
+    });
 });
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginBtn = document.getElementById('loginBtn');
     const generateBtn = document.getElementById('generateBtn');
     const downloadBtn = document.getElementById('downloadBtn');
+    const compareBtn = document.getElementById('compareBtn');
+    const toiletBtn = document.getElementById('toiletBtn');
     const textInput = document.getElementById('barcodeText');
     const filenameInput = document.getElementById('filename');
     const canvas = document.getElementById('barcodeCanvas');
-    const compareBtn = document.getElementById('compareBtn');
 
     client.functions.invoke("log-visit");
-    window.addEventListener('resize', updateContentOverflow);
+    window.addEventListener('resize', () => {
+        if (activeView) updateContentOverflow(activeView);
+    });
     countdown();
 
     loginBtn.addEventListener('click', async () => {
@@ -138,73 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
             toast.show(`Error occurred while comparing string: ${error.message}`);
         }
     });
-});
 
-function showView(viewToShow) {
-    viewLoading.hidden = true;
-    viewLogin.hidden = true;
-    viewApp.hidden = true;
-
-    viewToShow.hidden = false;
-    activeView = viewToShow;
-    contentResizeObserver.disconnect();
-    contentResizeObserver.observe(activeView);
-    updateContentOverflow();
-}
-
-function updateContentOverflow() {
-    if (!activeView) {
-        return;
-    }
-
-    const exceedsViewport = activeView.getBoundingClientRect().height > window.innerHeight;
-    document.body.classList.toggle('content-overflow', exceedsViewport);
-}
-
-async function compare(inputString) {
-    let hash = 0;
-    if (inputString.length === 0) return hash;
-
-    const encodedString = new TextEncoder().encode(inputString);
-
-    hash = await crypto.subtle.digest('SHA-256', encodedString).then(hashBuffer => {
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    toiletBtn.addEventListener('click', async () => {
+        await fuckItImOut(client);
     });
-
-    if (hash === '14dae5801a7c44c8f4527fdf5d9a2a3bda982bbc426cf67d173b1afd8357dc1c') {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-async function logActivity(eventType, targetElement) {
-    await client
-        .from('activity_logs')
-        .insert([
-            { event_type: eventType, target_element: targetElement },
-        ]);
-}
-
-function countdown() {
-    const end = new Date("2026-12-01T03:15:00Z").getTime();
-
-    let x = setInterval(function () {
-        let now = new Date().getTime();
-        let distance = end - now;
-
-        let days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-        document.getElementById('the-timer').innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-
-        if (distance < 0) {
-            clearInterval(x);
-            document.getElementById('the-timer').innerText = "My Treasure";
-        }
-    }, 1000);
-}
+});

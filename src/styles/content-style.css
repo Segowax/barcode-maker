@@ -1,4 +1,4 @@
-#app .result {
+main#app>.result {
     margin-top: 20px;
     font-size: 1rem;
     color: #333;
@@ -41,7 +41,7 @@
     color: #333;
 }
 
-#app .input-group input {
+main#app>.input-group>input {
     padding: 10px;
     width: 80%;
     max-width: 400px;
@@ -50,13 +50,30 @@
     font-size: 1rem;
 }
 
-#app article#the-timer {
-    animation: suuuu 10s reverse infinite;
-    color: #333;
-    font-size: 1.5rem;
-    margin-top: 20px;
+main#app>aside.toilet>input {
+    appearance: none;
+    background: linear-gradient(to bottom, #f8b56d 0%, #ed7d2b 35%, #d96218 100%);
+    border-bottom-color: #7c3d0d;
+    border-radius: 6px;
+    border: 2px solid #b65d1a;
+    bottom: 2px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -2px 0 rgba(0, 0, 0, 0.15), 0 3px 0 #9e4812, 0 4px 6px rgba(0, 0, 0, 0.25);
+    color: #fff;
+    cursor: pointer;
+    left: 2px;
+    letter-spacing: 0.04em;
+    padding: 10px 18px;
     position: fixed;
-    right: 10%;
-    text-align: center;
-    top: 0;
+    text-shadow: 1px 1px 0 #7a3a0b;
+    text-transform: uppercase;
+    transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+}
+
+main#app>aside.toilet>input:hover {
+    filter: brightness(1.04);
+}
+
+main#app>aside.toilet>input:active {
+    transform: translateY(2px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.15), 0 1px 0 #9e4812, 0 2px 4px rgba(0, 0, 0, 0.2);
 }
