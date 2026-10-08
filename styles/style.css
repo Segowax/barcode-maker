@@ -44,3 +44,14 @@ toast-bar {
     font-size: 1rem;
     z-index: 1000;
 }
+
+article#the-timer {
+    animation: suuuu 10s reverse infinite;
+    color: #333;
+    font-size: 1.5rem;
+    margin-top: 20px;
+    position: fixed;
+    right: 10%;
+    text-align: center;
+    top: 0;
+}
