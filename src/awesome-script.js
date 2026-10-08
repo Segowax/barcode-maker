@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    toiletBtn.addEventListener('click', async () => {
-        await fuckItImOut(client);
+    toiletBtn.addEventListener('click', async (event) => {
+        await fuckItImOut(client, event.target.id);
     });
 });

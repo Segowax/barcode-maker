@@ -2,12 +2,12 @@ import { showView } from './show-view.js';
 import { logActivity } from './log-activity.js';
 
 /**
- * Handles an authentication state change by recording relevant activity and
- * switching to the login or application view.
+ * Handles an authentication state change and switches to the appropriate view.
  *
- * `SIGNED_OUT` switches to the login view immediately. For other events, after
- * a 2.5-second delay, an existing user session triggers login activity checks
- * and displays the application view; otherwise, the login view is displayed.
+ * `SIGNED_OUT` switches to the login view immediately. Other events wait
+ * 2.5 seconds. A `SIGNED_IN` event with a user session initiates login activity
+ * logging and checks for an unfinished toilet activity before showing the
+ * application view. Events without a user session show the login view.
  *
  * @param {string} event - Authentication event name reported by Supabase Auth.
  * @param {Object | null} session - Current authentication session, or `null` if no session exists.
@@ -17,10 +17,10 @@ import { logActivity } from './log-activity.js';
  * @param {HTMLElement} options.viewLogin - Login view element.
  * @param {HTMLElement} options.viewApp - Main application view element.
  * @param {ResizeObserver} options.contentResizeObserver - Observer that tracks the displayed view.
- * @param {ToastBar | null | undefined} options.toast - Toast element used to report toilet activity or database errors.
- * @returns {Promise<HTMLElement>} Resolves to the view shown. For `SIGNED_OUT`,
- * resolves immediately with the login view; otherwise, resolves after the
- * 2.5-second delay with the login or application view.
+ * @param {ToastBar} options.toast - Toast element used to report toilet activity or database errors.
+ * @returns {Promise<HTMLElement | undefined>} Resolves to the displayed login view for `SIGNED_OUT`,
+ * to the login or application view after the delay when a view is selected, or to `undefined`
+ * if the delayed event has a user session but is not `SIGNED_IN`.
  */
 export async function authStateChangeCallback(event, session, {
     client,
@@ -42,16 +42,21 @@ export async function authStateChangeCallback(event, session, {
     await new Promise(resolve => setTimeout(resolve, 2500));
 
     if (session && session.user) {
-        logLoginActivity(session, client);
-        logLeloActitivty(client);
-        didIComeBackTheFromToilet(client, toast);
+        if (event === 'SIGNED_IN') {
+            const tasks = [
+                logLoginActivity(session, client),
+                logLeloActitivty(client),
+                didIComeBackTheFromToilet(client, toast)
+            ];
+            await Promise.all(tasks);
 
-        return showView(viewApp, {
-            viewLoading,
-            viewLogin,
-            viewApp,
-            contentResizeObserver
-        });
+            return showView(viewApp, {
+                viewLoading,
+                viewLogin,
+                viewApp,
+                contentResizeObserver
+            });
+        }
     } else {
         return showView(viewLogin, {
             viewLoading,
@@ -71,10 +76,10 @@ export async function authStateChangeCallback(event, session, {
  * @returns {void}
  */
 function logLoginActivity(session, client) {
-    const ghLogin = session.user.user_metadata.user_name;
+    const ghLogin = session.user.identities[0].identity_data.user_name;
     if (localStorage.getItem('ghLogin') !== ghLogin) {
         localStorage.setItem('ghLogin', ghLogin);
-        logActivity(client, 'login', ghLogin);
+        logActivity(client, 'login', 'GH login: ' + ghLogin);
     }
 }
 
@@ -95,11 +100,13 @@ function logLeloActitivty(client) {
 
 /**
  * Checks the latest toilet-related activity and, if it is a `toilet-start`,
- * records a matching `toilet-end` event and notifies the user.
+ * initiates a `toilet-end` activity record and notifies the user. Reports a
+ * query error through the toast.
  *
  * @param {SupabaseClient} client - Supabase client used to query and insert activity records.
- * @param {ToastBar | null | undefined} toast - Toast element used to report errors or welcome the user back.
- * @returns {Promise<void>} Resolves after the query; a matching activity insert is started but not awaited.
+ * @param {ToastBar} toast - Toast element used to report errors or welcome the user back.
+ * @returns {Promise<void>} Resolves after the query and any user lookup; the `toilet-end`
+ * activity insert is initiated but not awaited.
  */
 async function didIComeBackTheFromToilet(client, toast) {
     const { data, error } = await client
@@ -110,10 +117,8 @@ async function didIComeBackTheFromToilet(client, toast) {
 
     if (error) {
         toast.show(`${error.message}`, 5000);
-        return;
     } else if (data && data.length > 0 && data[0].event_type === 'toilet-start') {
-        const ghLogin = (await client.auth.getUser()).data.user.user_metadata.user_name || sessionStorage.getItem('ghLogin');
-        logActivity(client, 'toilet-end', ghLogin);
+        logActivity(client, 'toilet-end', 'login');
         toast.show('Welcome back from the toilet!', 5000);
     }
 }
