@@ -1,4 +1,4 @@
-class ToastBar extends HTMLElement {
+export class ToastBar extends HTMLElement {
     connectedCallback() {
         this.setAttribute('role', 'status');
         this.setAttribute('aria-live', 'polite');

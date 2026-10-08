@@ -1,8 +1,9 @@
 {
   "scripts": {
-    "build": "mkdir dist && uglifyjs src/awesome-script.js -o dist/script.min.js -c -m && uglifyjs src/toast-bar.js -o dist/toast-bar.min.js -c -m && cp src/index.html dist/index.htm && cp -r src/styles dist/styles && cp -r src/assets dist/assets"
+    "build": "npm run build:js && node scripts/copy-static-files.mjs",
+    "build:js": "esbuild src/awesome-script.js --bundle --minify --platform=browser --target=es2020 --outfile=dist/awesome-script.js"
   },
   "devDependencies": {
-    "uglify-js": "^3.19.3"
+    "esbuild": "^0.28.2"
   }
 }
