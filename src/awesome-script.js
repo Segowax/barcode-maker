@@ -24,8 +24,8 @@ const contentResizeObserver = new ResizeObserver((entries) => {
 
 showLoginErrorsIfAny(toast);
 
-client.auth.onAuthStateChange((event, session) => {
-    activeView = authStateChangeCallback(event, session, {
+client.auth.onAuthStateChange(async (event, session) => {
+    activeView = await authStateChangeCallback(event, session, {
         client,
         viewLoading,
         viewLogin,
