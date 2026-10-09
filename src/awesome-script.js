@@ -35,7 +35,7 @@ client.auth.onAuthStateChange(async (event, session) => {
     });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const loginBtn = document.getElementById('loginBtn');
     const generateBtn = document.getElementById('generateBtn');
     const downloadBtn = document.getElementById('downloadBtn');
@@ -129,4 +129,41 @@ document.addEventListener('DOMContentLoaded', () => {
     toiletBtn.addEventListener('click', async (event) => {
         await fuckItImOut(client, event.target.id);
     });
+
+    let session = await client.auth.getUser();
+    if (session.data.user.app_metadata?.is_admin) {
+        const existingChannel = client.getChannels().find((ch) => ch.topic === 'realtime:XD');
+        if (existingChannel) {
+            await client.removeChannel(existingChannel);
+        }
+        client.channel('XD')
+            .on(
+                'postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'activity_logs', filter: 'event_type=like.toilet-%' },
+                (payload) => {
+                    const lel = {
+                        eventType: payload.new.event_type,
+                        ghLogin: payload.new.gh_login,
+                        createdAt: payload.new.created_at
+                    }
+                    if (lel.eventType === 'toilet-start') {
+                        const table = document.getElementById('toilet-events');
+                        const tbody = table.querySelector('tbody') || table;
+
+                        const rowHtml = `
+                    <tr id="row-${lel.ghLogin}">
+                        <td>${lel.ghLogin}</td>
+                        <td>${new Date(lel.createdAt).toLocaleString()}</td>
+                    </tr>
+                    `;
+                        tbody.insertAdjacentHTML('afterbegin', rowHtml);
+                    } else if (lel.eventType === 'toilet-end') {
+                        const rowToRemove = document.getElementById(`row-${lel.ghLogin}`)
+                        if (!!rowToRemove)
+                            rowToRemove.remove();
+                    }
+                }
+            )
+            .subscribe()
+    }
 });
