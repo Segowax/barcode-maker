@@ -77,3 +77,56 @@ main#app>aside.toilet>input:active {
     transform: translateY(2px);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.15), 0 1px 0 #9e4812, 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+
+main#app>table#toilet-events {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(124, 61, 13, 0.25);
+    border-collapse: separate;
+    border-radius: 8px;
+    border-spacing: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    color: #333;
+    margin: 24px auto;
+    max-width: 100%;
+    overflow: hidden;
+    text-align: left;
+    width: 100%;
+}
+
+main#app>table#toilet-events th,
+main#app>table#toilet-events td {
+    padding: 12px 16px;
+}
+
+main#app>table#toilet-events th {
+    background: linear-gradient(to bottom, #f8b56d, #ed7d2b);
+    color: #fff;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    text-shadow: 1px 1px 0 #7a3a0b;
+    text-transform: uppercase;
+}
+
+main#app>table#toilet-events td {
+    border-top: 1px solid rgba(124, 61, 13, 0.12);
+    overflow-wrap: anywhere;
+}
+
+main#app>table#toilet-events tbody tr:nth-child(even) {
+    background-color: rgba(248, 181, 109, 0.14);
+}
+
+main#app>table#toilet-events tbody tr:hover {
+    background-color: rgba(237, 125, 43, 0.16);
+}
+
+@media (max-width: 480px) {
+    main#app>table#toilet-events th,
+    main#app>table#toilet-events td {
+        padding: 10px 12px;
+    }
+
+    main#app>table#toilet-events {
+        font-size: 0.9rem;
+    }
+}
