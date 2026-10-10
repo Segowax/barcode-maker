@@ -4,3 +4,4 @@ await mkdir('dist', { recursive: true });
 await copyFile('src/index.html', 'dist/index.html');
 await cp('src/styles', 'dist/styles', { recursive: true });
 await cp('src/assets', 'dist/assets', { recursive: true });
+await cp('src/favicon.ico', 'dist/favicon.ico');
