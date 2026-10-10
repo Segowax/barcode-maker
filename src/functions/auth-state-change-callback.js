@@ -1,13 +1,15 @@
 import { showView } from './show-view.js';
 import { logActivity } from './log-activity.js';
+import { updateToiletTable } from './update-toilet-table.js';
 
 /**
  * Handles an authentication state change and switches to the appropriate view.
  *
  * `SIGNED_OUT` switches to the login view immediately. Other events wait
- * 2.5 seconds. A `SIGNED_IN` event with a user session initiates login activity
- * logging and checks for an unfinished toilet activity before showing the
- * application view. Events without a user session show the login view.
+ * 2.5 seconds. A `SIGNED_IN` event with a user session logs login-related
+ * activity, checks for an unfinished toilet activity, subscribes administrators
+ * to toilet activity updates if needed, and shows the application view. Events
+ * without a user session show the login view.
  *
  * @param {string} event - Authentication event name reported by Supabase Auth.
  * @param {Object | null} session - Current authentication session, or `null` if no session exists.
@@ -18,9 +20,9 @@ import { logActivity } from './log-activity.js';
  * @param {HTMLElement} options.viewApp - Main application view element.
  * @param {ResizeObserver} options.contentResizeObserver - Observer that tracks the displayed view.
  * @param {ToastBar} options.toast - Toast element used to report toilet activity or database errors.
- * @returns {Promise<HTMLElement | undefined>} Resolves to the displayed login view for `SIGNED_OUT`,
- * to the login or application view after the delay when a view is selected, or to `undefined`
- * if the delayed event has a user session but is not `SIGNED_IN`.
+ * @returns {Promise<HTMLElement | undefined>} Resolves to the displayed login
+ * or application view when one is selected. Resolves to `undefined` after the
+ * delay if the session has a user but the event is not `SIGNED_IN`.
  */
 export async function authStateChangeCallback(event, session, {
     client,
@@ -50,6 +52,19 @@ export async function authStateChangeCallback(event, session, {
             ];
             await Promise.all(tasks);
 
+            if (session.user.app_metadata?.is_admin) {
+                const existingChannel = client.getChannels().find((ch) => ch.topic === 'realtime:XD');
+                if (!existingChannel) {
+                    client.channel('XD')
+                        .on(
+                            'postgres_changes',
+                            { event: 'INSERT', schema: 'public', table: 'activity_logs', filter: 'event_type=like.toilet-%' },
+                            (payload) => updateToiletTable(payload)
+                        )
+                        .subscribe()
+                }
+            }
+
             return showView(viewApp, {
                 viewLoading,
                 viewLogin,
@@ -68,8 +83,9 @@ export async function authStateChangeCallback(event, session, {
 }
 
 /**
- * Records a login activity when the authenticated GitHub username differs
- * from the username currently stored in local storage.
+ * Starts recording a login activity when the authenticated GitHub username
+ * differs from the username currently stored in local storage. The activity
+ * insert is not awaited.
  *
  * @param {Object} session - Authenticated session containing the user metadata.
  * @param {SupabaseClient} client - Supabase client used to insert the activity record.
@@ -84,7 +100,8 @@ function logLoginActivity(session, client) {
 }
 
 /**
- * Records credentials saved for the login flow, then removes them from session storage.
+ * Starts recording credentials saved for the login flow, then removes them
+ * from session storage. The activity insert is not awaited.
  *
  * @param {SupabaseClient} client - Supabase client used to insert the activity record.
  * @returns {void}
@@ -100,13 +117,13 @@ function logLeloActitivty(client) {
 
 /**
  * Checks the latest toilet-related activity and, if it is a `toilet-start`,
- * initiates a `toilet-end` activity record and notifies the user. Reports a
+ * starts a `toilet-end` activity record and notifies the user. Reports a
  * query error through the toast.
  *
  * @param {SupabaseClient} client - Supabase client used to query and insert activity records.
  * @param {ToastBar} toast - Toast element used to report errors or welcome the user back.
- * @returns {Promise<void>} Resolves after the query and any user lookup; the `toilet-end`
- * activity insert is initiated but not awaited.
+ * @returns {Promise<void>} Resolves after the query and any resulting toast
+ * notification. The `toilet-end` activity insert, when needed, is not awaited.
  */
 async function didIComeBackTheFromToilet(client, toast) {
     const { data, error } = await client

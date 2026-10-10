@@ -8,34 +8,33 @@ import { compare } from './functions/compare-answer.js';
 
 const SUPABASE_URL = 'https://hxkykopscbgorgkkpxvi.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_LtRmS9nawffi11Yo_YT3Qg_WU_0D6sJ';
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-const viewLoading = document.getElementById('loading');
-const viewLogin = document.getElementById('login');
-const viewApp = document.getElementById('app');
-/** @type {ToastBar | null} */
-const toast = document.getElementById('toast');
-
-let activeView = null;
-const contentResizeObserver = new ResizeObserver((entries) => {
-    const view = entries[0]?.target;
-    if (view) updateContentOverflow(view);
-});
-
-showLoginErrorsIfAny(toast);
-
-client.auth.onAuthStateChange(async (event, session) => {
-    activeView = await authStateChangeCallback(event, session, {
-        client,
-        viewLoading,
-        viewLogin,
-        viewApp,
-        contentResizeObserver,
-        toast
-    });
-});
 
 document.addEventListener('DOMContentLoaded', async () => {
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    client.functions.invoke("log-visit");
+    client.auth.onAuthStateChange(async (event, session) => {
+        activeView = await authStateChangeCallback(event, session, {
+            client,
+            viewLoading,
+            viewLogin,
+            viewApp,
+            contentResizeObserver,
+            toast
+        });
+    });
+
+    const viewLoading = document.getElementById('loading');
+    const viewLogin = document.getElementById('login');
+    const viewApp = document.getElementById('app');
+    /** @type {ToastBar | null} */
+    const toast = document.getElementById('toast');
+
+    let activeView = null;
+    const contentResizeObserver = new ResizeObserver((entries) => {
+        const view = entries[0]?.target;
+        if (view) updateContentOverflow(view);
+    });
+
     const loginBtn = document.getElementById('loginBtn');
     const generateBtn = document.getElementById('generateBtn');
     const downloadBtn = document.getElementById('downloadBtn');
@@ -45,11 +44,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const filenameInput = document.getElementById('filename');
     const canvas = document.getElementById('barcodeCanvas');
 
-    client.functions.invoke("log-visit");
     window.addEventListener('resize', () => {
         if (activeView) updateContentOverflow(activeView);
     });
-    countdown();
 
     loginBtn.addEventListener('click', async () => {
         const login = document.getElementById('login-input').value.trim();
@@ -130,40 +127,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         await fuckItImOut(client, event.target.id);
     });
 
-    let session = await client.auth.getUser();
-    if (session.data.user.app_metadata?.is_admin) {
-        const existingChannel = client.getChannels().find((ch) => ch.topic === 'realtime:XD');
-        if (existingChannel) {
-            await client.removeChannel(existingChannel);
-        }
-        client.channel('XD')
-            .on(
-                'postgres_changes',
-                { event: 'INSERT', schema: 'public', table: 'activity_logs', filter: 'event_type=like.toilet-%' },
-                (payload) => {
-                    const lel = {
-                        eventType: payload.new.event_type,
-                        ghLogin: payload.new.gh_login,
-                        createdAt: payload.new.created_at
-                    }
-                    if (lel.eventType === 'toilet-start') {
-                        const table = document.getElementById('toilet-events');
-                        const tbody = table.querySelector('tbody') || table;
-
-                        const rowHtml = `
-                    <tr id="row-${lel.ghLogin}">
-                        <td>${lel.ghLogin}</td>
-                        <td>${new Date(lel.createdAt).toLocaleString()}</td>
-                    </tr>
-                    `;
-                        tbody.insertAdjacentHTML('afterbegin', rowHtml);
-                    } else if (lel.eventType === 'toilet-end') {
-                        const rowToRemove = document.getElementById(`row-${lel.ghLogin}`)
-                        if (!!rowToRemove)
-                            rowToRemove.remove();
-                    }
-                }
-            )
-            .subscribe()
-    }
+    showLoginErrorsIfAny(toast);
+    countdown();
 });
