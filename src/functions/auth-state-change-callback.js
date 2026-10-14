@@ -53,13 +53,20 @@ export async function authStateChangeCallback(event, session, {
             await Promise.all(tasks);
 
             if (session.user.app_metadata?.is_admin) {
+                const notificationSound = new Audio('assets/legohash.wav');
                 const existingChannel = client.getChannels().find((ch) => ch.topic === 'realtime:XD');
                 if (!existingChannel) {
                     client.channel('XD')
                         .on(
                             'postgres_changes',
                             { event: 'INSERT', schema: 'public', table: 'activity_logs', filter: 'event_type=like.toilet-%' },
-                            (payload) => updateToiletTable(payload)
+                            (payload) => {
+                                notificationSound.currentTime = 0;
+                                notificationSound.play().catch((error) => {
+                                    toast.show('Error when trying to play music:', error);
+                                });
+                                updateToiletTable(payload);
+                            }
                         )
                         .subscribe()
                 }
