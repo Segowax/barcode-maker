@@ -5,6 +5,7 @@ import { countdown } from './functions/countdown.js';
 import { authStateChangeCallback } from './functions/auth-state-change-callback.js';
 import { fuckItImOut } from './functions/fuck-it-i-am-out.js';
 import { compare } from './functions/compare-answer.js';
+import { logActivity } from './functions/log-activity.js';
 
 const SUPABASE_URL = 'https://hxkykopscbgorgkkpxvi.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_LtRmS9nawffi11Yo_YT3Qg_WU_0D6sJ';
@@ -37,9 +38,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const loginBtn = document.getElementById('loginBtn');
     const generateBtn = document.getElementById('generateBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
+    const downloadCodeBtn = document.getElementById('downloadCodeBtn');
     const compareBtn = document.getElementById('compareBtn');
     const toiletBtn = document.getElementById('toiletBtn');
+    const downloadExerciseBtn = document.getElementById('downloadExerciseBtn');
     const textInput = document.getElementById('barcodeText');
     const filenameInput = document.getElementById('filename');
     const canvas = document.getElementById('barcodeCanvas');
@@ -63,7 +65,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    generateBtn.addEventListener('click', () => {
+    generateBtn.addEventListener('click', async (event) => {
+        await logActivity(client, 'generating code 128', event.target.id);
         const text = textInput.value.trim().replace(/\\t/g, '\t');
 
         if (!text) {
@@ -80,30 +83,31 @@ document.addEventListener('DOMContentLoaded', async () => {
                 lineColor: "#000000"
             });
 
-            downloadBtn.classList.remove('hidden');
+            downloadCodeBtn.classList.remove('hidden');
         } catch (error) {
             toast.show('An error occurred while generating the code: ' + error.message);
         }
     });
 
-    downloadBtn.addEventListener('click', () => {
+    downloadCodeBtn.addEventListener('click', async (event) => {
+        await logActivity(client, 'download code 128', event.target.id);
         let filename = filenameInput.value.trim();
         if (!filename) {
             filename = 'barcode';
         }
 
         const imgData = canvas.toDataURL("image/png");
-
         const link = document.createElement('a');
+
         link.href = imgData;
         link.download = `${filename}.png`;
-
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     });
 
-    compareBtn.addEventListener('click', async () => {
+    compareBtn.addEventListener('click', async (event) => {
+        await logActivity(client, 'comparing hash', event.target.id);
         const inputString = document.getElementById('hashInput').value.trim();
         const resultDiv = document.getElementsByClassName('result')[0];
 
@@ -125,6 +129,46 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     toiletBtn.addEventListener('click', async (event) => {
         await fuckItImOut(client, event.target.id);
+    });
+
+    downloadExerciseBtn.addEventListener('click', async (event) => {
+        await logActivity(client, 'download', event.target.id);
+        const { data: files, error: getError } = await client
+            .from('downloads')
+            .select('*');
+
+        if (getError) {
+            toast.show('Error during getting file list.');
+            return;
+        }
+
+        const paths = files.map(f => f.file_path)
+        const { data, error: downloadError } = await client.storage
+            .from('Downloads')
+            .createSignedUrls(paths, 60);
+
+        if (downloadError) {
+            toast.show('Error during downloading files.');
+            return;
+        }
+
+        data.forEach((item, index) => {
+            if (!item.signedUrl) {
+                toast.show(`Error downloading ${item.path}: ${item.error}`);
+                return;
+            }
+
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.href = item.signedUrl;
+                link.download = item.path.split('/').pop() || 'plik';
+                if (link.href.includes('pdf'))
+                    link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }, index * 1000);
+        });
     });
 
     showLoginErrorsIfAny(toast);

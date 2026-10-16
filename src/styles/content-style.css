@@ -5,7 +5,7 @@ main#app>.result {
     display: none;
 }
 
-#app .canvas-container {
+main#app>.canvas-container {
     margin-top: 30px;
     min-height: 150px;
     display: flex;
@@ -13,14 +13,14 @@ main#app>.result {
     align-items: center;
 }
 
-#app .actions {
+main#app>.actions {
     margin-top: 20px;
     display: flex;
     gap: 10px;
     justify-content: center;
 }
 
-#app .actions button {
+main#app>.actions>button {
     background-color: rgb(243, 120, 76);
     cursor: pointer;
     font-size: 16px;
@@ -28,14 +28,14 @@ main#app>.result {
     padding: 10px;
 }
 
-#app .input-group {
+main#app>.input-group {
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-#app .input-group label {
+main#app>.input-group>label {
     margin-bottom: 5px;
     font-size: 1.2rem;
     color: #333;
@@ -121,6 +121,7 @@ main#app>table#toilet-events tbody tr:hover {
 }
 
 @media (max-width: 480px) {
+
     main#app>table#toilet-events th,
     main#app>table#toilet-events td {
         padding: 10px 12px;
