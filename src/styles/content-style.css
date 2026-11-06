@@ -1,3 +1,12 @@
+main#app {
+    user-select: none;
+}
+
+main#app input,
+main#app textarea {
+    user-select: text;
+}
+
 main#app>.result {
     margin-top: 20px;
     font-size: 1rem;
