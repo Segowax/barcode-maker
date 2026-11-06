@@ -6,6 +6,7 @@ import { authStateChangeCallback } from './functions/auth-state-change-callback.
 import { fuckItImOut } from './functions/fuck-it-i-am-out.js';
 import { compare } from './functions/compare-answer.js';
 import { logActivity } from './functions/log-activity.js';
+import {downloadCurrentExercise} from './functions/download-current-exercise.js';
 
 const SUPABASE_URL = 'https://hxkykopscbgorgkkpxvi.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_LtRmS9nawffi11Yo_YT3Qg_WU_0D6sJ';
@@ -143,43 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     downloadExerciseBtn.addEventListener('click', async (event) => {
-        await logActivity(client, 'download', event.target.id);
-        const { data: files, error: getError } = await client
-            .from('downloads')
-            .select('*');
-
-        if (getError) {
-            toast.show('Error during getting file list.');
-            return;
-        }
-
-        const paths = files.map(f => f.file_path)
-        const { data, error: downloadError } = await client.storage
-            .from('Downloads')
-            .createSignedUrls(paths, 60);
-
-        if (downloadError) {
-            toast.show('Error during downloading files.');
-            return;
-        }
-
-        data.forEach((item, index) => {
-            if (!item.signedUrl) {
-                toast.show(`Error downloading ${item.path}: ${item.error}`);
-                return;
-            }
-
-            setTimeout(() => {
-                const link = document.createElement('a');
-                link.href = item.signedUrl;
-                link.download = item.path.split('/').pop() || 'plik';
-                if (link.href.includes('pdf'))
-                    link.target = '_blank';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }, index * 1000);
-        });
+        await downloadCurrentExercise(client, event, '06112026', toast);
     });
 
     showLoginErrorsIfAny(toast);
