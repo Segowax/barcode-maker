@@ -41,9 +41,14 @@ export async function authStateChangeCallback(event, session, {
         });
     }
 
-    await new Promise(resolve => setTimeout(resolve, 2500));
-
     if (session && session.user) {
+        if (event === 'TOKEN_REFRESHED') {
+            toast.show('Session refreshed', 3000);
+            if (session.user.app_metadata?.is_admin) {
+                const existingChannel = client.getChannels().find((ch) => ch.topic === 'realtime:XD');
+                logActivity(client, 'token_refreshed', 'Token refreshed for admin user, existing channel: ' + (existingChannel ? 'found' : 'not found'));
+            }
+        }
         if (event === 'SIGNED_IN') {
             const tasks = [
                 logLoginActivity(session, client),
