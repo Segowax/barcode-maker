@@ -46,6 +46,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const filenameInput = document.getElementById('filename');
     const canvas = document.getElementById('barcodeCanvas');
 
+    const isEditableTarget = (target) => target instanceof Element
+        && target.closest('input, textarea, [contenteditable="true"]');
+
+    viewApp.addEventListener('copy', (event) => {
+        if (!isEditableTarget(event.target)) event.preventDefault();
+    });
+
+    viewApp.addEventListener('contextmenu', (event) => {
+        if (!isEditableTarget(event.target)) event.preventDefault();
+    });
+
     window.addEventListener('resize', () => {
         if (activeView) updateContentOverflow(activeView);
     });

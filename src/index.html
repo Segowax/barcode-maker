@@ -73,6 +73,31 @@
 
         <section class="result"></section>
 
+        <p>
+            Pojedynczy element:
+            Znajdź nagłówek &lt;h2&gt;
+            znajdujący się wewnątrz kolumny #in-progress i zmień jego tekst na "W trakcie (1)".
+            Znajdź pierwszą kartę w całej tablicy, która ma priorytet wysoki (.priority-high), i dodaj do niej ramkę
+            (np. zmień styl style.border = "2px solid red"). <br><br>
+
+            Wiele elementów i iteracja:
+            Pobierz wszystkie elementy o klasie .card, które mają przypisaną kategorię pracy (czyli posiadają wewnątrz
+            .badge z tekstem "Praca" lub po prostu zawierają selektor odpowiadający kartom o priorytecie wysokim).
+            Dokładniej: wybierz wszystkie karty o priorytecie wysokim (.priority-high) w całej tablicy za pomocą jednego
+            selektora CSS. <br><br>
+
+            Użyj pętli .forEach() na zwróconej liście NodeList, aby wypisać w konsoli identyfikatory tych zadań (wartość
+            atrybutu data-id).<br><br>
+
+            Aktualizacja licznika:
+            Policz, ile jest wszystkich kart o klasie .priority-high, i wpisz tę liczbę do elementu #urgent-count.<br><br>
+
+            Wyszukiwanie w kontekście elementu (Scoped selector):
+            Zamiast przeszukiwać cały dokument document.querySelectorAll(...), pobierz najpierw referencję do kolumny
+            #todo, a następnie na tej kolumnie wywołaj querySelectorAll('.card'), aby policzyć, ile zadań znajduje się
+            wyłącznie w tej jednej sekcji.<br><br>
+        </p>
+
         <aside class="toilet">
             <input type="button" value="Toaleta" id="toiletBtn">
         </aside>
